@@ -7,7 +7,6 @@
 
 typedef struct {
 	uint8_t *key;
-	uint8_t *unprocessed;
 	kc_cipher_op_t op;
 } kc_cipher_ecb_t;
 
@@ -25,6 +24,14 @@ static const kc_cipher_fn_table_t table = {
 	.final = cipher_ecb_final,
 };
 
+static inline void cipher_ecb_padding(uint8_t *data, size_t size)
+{
+	WARN_ON(data == NULL);
+	data[ size ] = 0;
+	data += size;
+	memset(data, 0, param.block_size - size);
+}
+
 const kc_cipher_fn_table_t *kc_cipher_ecb(void)
 {
 	printk(KERN_DEBUG "%s(): %p\n", __func__, &table);
@@ -39,10 +46,8 @@ void *cipher_ecb_create(void)
 	}
 
 	ecb->key = kzalloc(param.key_size, GFP_KERNEL);
-	ecb->unprocessed = kzalloc(param.block_size, GFP_KERNEL);
-	if (ecb->key == NULL || ecb->unprocessed) {
+	if (ecb->key == NULL) {
 		kfree(ecb->key);
-		kfree(ecb->unprocessed);
 		kfree(ecb);
 		return NULL;
 	}
@@ -55,7 +60,6 @@ void cipher_ecb_destroy(void *cipher)
 	if (cipher) {
 		kc_cipher_ecb_t *ecb = (kc_cipher_ecb_t *)cipher;
 		kfree(ecb->key);
-		kfree(ecb->unprocessed);
 		kfree(ecb);
 	}
 }
@@ -76,14 +80,12 @@ int cipher_ecb_init(void *cipher, kc_cipher_op_t op, uint8_t *key)
 	return 0;
 }
 
-int cipher_ecb_update(void *cipher, const uint8_t *in, const size_t in_size, const uint8_t *out,
-		      size_t *out_size)
+int cipher_ecb_update(void *cipher, const uint8_t *in, const size_t in_size, const uint8_t *out)
 {
 	(void)cipher;
 	(void)in;
 	(void)in_size;
 	(void)out;
-	(void)out_size;
 	return 0;
 }
 

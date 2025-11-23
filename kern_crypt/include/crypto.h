@@ -25,7 +25,7 @@ const kc_cipher_param_t *kc_cipher_param(const kc_cipher_t *cipher);
 
 int kc_cipher_init(kc_cipher_t *cipher, kc_cipher_op_t op, uint8_t *key);
 
-int kc_cipher_update(kc_cipher_t *cipher, uint8_t *in, size_t in_sIze,
+int kc_cipher_update(kc_cipher_t *cipher, const uint8_t *in, size_t in_sIze,
 		     uint8_t *out, size_t *out_size);
 
 int kc_cipher_final(kc_cipher_t *cipher, uint8_t *in, size_t in_size,
