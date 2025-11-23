@@ -3,12 +3,12 @@ TARGET = kern_crypt
 KERNEL = $(shell uname -r)
 KCC=$(shell grep CONFIG_CC_VERSION /boot/config-$(KERNEL) | cut -d '"' -f2 | awk '{print$$1}')
 KDIR = /lib/modules/$(KERNEL)/build
-INC_DIR = $(KDIR)/include
 PWD = $(shell pwd)
 
 SOURCES :=
 SOURCES += $(wildcard module/*.c)
 SOURCES += $(wildcard crypto/*.c)
+EXTRA_CFLAGS += -I$(PWD)/include
 OBJS = $(SOURCES:.c=.o)
 
 obj-m += $(TARGET).o
