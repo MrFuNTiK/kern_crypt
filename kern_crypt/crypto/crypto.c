@@ -105,9 +105,13 @@ int kc_cipher_final(kc_cipher_t *cipher, uint8_t *in, size_t in_size,
 		return res;
 	}
 
-	res = cipher->fn->final(cipher->cipher, in + out_tmp, in_size - out_tmp,
-				out + out_tmp, &out_last);
-	if(res != 0) {
+	if (out_tmp > in_size) {
+		res = cipher->fn->final(cipher->cipher, in + out_tmp,
+					in_size - out_tmp, out + out_tmp,
+					&out_last);
+	}
+
+	if (res != 0) {
 		return res;
 	}
 
