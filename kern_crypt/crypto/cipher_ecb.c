@@ -11,7 +11,7 @@ typedef struct {
 	kc_cipher_op_t op;
 } kc_cipher_ecb_t;
 
-static kc_cipher_param_t param = {
+static const kc_cipher_param_t param = {
 	.key_size = 64,
 	.block_size = 64,
 };
@@ -57,16 +57,13 @@ const kc_cipher_fn_table_t *kc_cipher_ecb(void)
 
 void *cipher_ecb_create(void)
 {
-	kc_cipher_ecb_t *ecb = kzalloc(sizeof(kc_cipher_ecb_t), GFP_KERNEL);
+	kc_cipher_ecb_t *ecb =
+		kzalloc(sizeof(kc_cipher_ecb_t) + param.key_size, GFP_KERNEL);
 	if (ecb == NULL) {
 		return NULL;
 	}
 
-	ecb->key = kzalloc(param.key_size, GFP_KERNEL);
-	if (ecb->key == NULL) {
-		kfree(ecb);
-		return NULL;
-	}
+	ecb->key = (uint8_t *)(ecb + sizeof(ecb));
 	printk(KERN_DEBUG "%s(): %p\n", __func__, ecb);
 	return ecb;
 }
@@ -75,7 +72,6 @@ void cipher_ecb_destroy(void *cipher)
 {
 	if (cipher) {
 		kc_cipher_ecb_t *ecb = (kc_cipher_ecb_t *)cipher;
-		kfree(ecb->key);
 		kfree(ecb);
 	}
 }
