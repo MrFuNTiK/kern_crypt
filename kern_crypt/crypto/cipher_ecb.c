@@ -64,7 +64,6 @@ void *cipher_ecb_create(void)
 
 	ecb->key = kzalloc(param.key_size, GFP_KERNEL);
 	if (ecb->key == NULL) {
-		kfree(ecb->key);
 		kfree(ecb);
 		return NULL;
 	}
@@ -130,6 +129,7 @@ int cipher_ecb_update(void *cipher, const uint8_t *in, const size_t in_size,
 int cipher_ecb_final(void *cipher, uint8_t *in, size_t in_size, uint8_t *out,
 		     size_t *out_size)
 {
+	int ret;
 	uint8_t buf[BLOCK_SIZE];
 	const kc_cipher_ecb_t *ecb = (kc_cipher_ecb_t *)cipher;
 
@@ -149,5 +149,8 @@ int cipher_ecb_final(void *cipher, uint8_t *in, size_t in_size, uint8_t *out,
 		cipher_ecb_padding(in, in_size);
 	}
 
-	return cipher_ecb_update(cipher, buf, BLOCK_SIZE, out);
+	ret = cipher_ecb_update(cipher, buf, BLOCK_SIZE, out);
+	*out_size = ret == 0 ? BLOCK_SIZE : 0;
+	printk(KERN_INFO "out_size: %lu\n", *out_size);
+	return ret;
 }
