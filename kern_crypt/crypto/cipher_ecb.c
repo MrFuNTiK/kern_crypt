@@ -44,14 +44,15 @@ static inline int cipher_ecb_update_encrypt(uint8_t *buf, const uint8_t *key)
 
 static inline int cipher_ecb_update_decrypt(uint8_t *buf, const uint8_t *key)
 {
-	(void)buf;
-	(void)key;
+	S_transform512(buf, PI_REVERSE);
+	P_transform512(buf, TAU_REVERSE);
+	L_transform512(buf, A_REVERSE);
+	X_transform512(buf, key);
 	return 0;
 }
 
 const kc_cipher_fn_table_t *kc_cipher_ecb(void)
 {
-	printk(KERN_DEBUG "%s(): %p\n", __func__, &table);
 	return &table;
 }
 
@@ -64,7 +65,6 @@ void *cipher_ecb_create(void)
 	}
 
 	ecb->key = (uint8_t *)(ecb + sizeof(ecb));
-	printk(KERN_DEBUG "%s(): %p\n", __func__, ecb);
 	return ecb;
 }
 
@@ -147,6 +147,5 @@ int cipher_ecb_final(void *cipher, uint8_t *in, size_t in_size, uint8_t *out,
 
 	ret = cipher_ecb_update(cipher, buf, BLOCK_SIZE, out);
 	*out_size = ret == 0 ? BLOCK_SIZE : 0;
-	printk(KERN_INFO "out_size: %lu\n", *out_size);
 	return ret;
 }

@@ -8,6 +8,7 @@ PWD = $(shell pwd)
 SOURCES :=
 SOURCES += $(wildcard module/*.c)
 SOURCES += $(wildcard crypto/*.c)
+SOURCES += $(wildcard self_test/*c)
 EXTRA_CFLAGS += -I$(PWD)/include
 OBJS = $(SOURCES:.c=.o)
 

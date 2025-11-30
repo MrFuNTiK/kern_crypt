@@ -24,7 +24,6 @@ kc_cipher_t *kc_cipher_create(const kc_cipher_fn_table_t *fn)
 		kfree(cipher);
 		return NULL;
 	}
-	printk(KERN_DEBUG "%s: %p\n", __func__, cipher);
 	return cipher;
 }
 
@@ -60,8 +59,8 @@ int kc_cipher_update(kc_cipher_t *cipher, const uint8_t *in, size_t in_size,
 	size_t blocks_count;
 	size_t rest_size;
 	size_t i;
-	const uint8_t *current_data;
-	size_t out_tmp = 0;
+	const uint8_t *next_data;
+	size_t out_size_tmp = 0;
 
 	WARN_ON(cipher == NULL);
 	WARN_ON(in == NULL);
@@ -71,27 +70,28 @@ int kc_cipher_update(kc_cipher_t *cipher, const uint8_t *in, size_t in_size,
 	block_size = cipher->fn->param()->block_size;
 	rest_size = in_size + cipher->unprocessed_size;
 	blocks_count = rest_size / block_size;
-	current_data = in;
-	memcpy(cipher->unprocessed + cipher->unprocessed_size, current_data,
+
+	memcpy(cipher->unprocessed + cipher->unprocessed_size, in,
 	       block_size - cipher->unprocessed_size);
-	current_data += cipher->unprocessed_size;
+	next_data = in + block_size - cipher->unprocessed_size;
 	*out = 0;
 
 	for (i = 0; i < blocks_count; ++i) {
-		int res = cipher->fn->update(cipher->cipher, current_data,
+		int res = cipher->fn->update(cipher->cipher, cipher->unprocessed,
 					     block_size, out);
 		if (res != 0) {
 			return res;
 		}
-		memcpy(cipher->unprocessed, current_data, block_size);
-		current_data += block_size;
+		memcpy(cipher->unprocessed, next_data, block_size);
+		next_data += block_size;
 		rest_size -= block_size;
-		out_tmp += block_size;
+		out_size_tmp += block_size;
+		out += block_size;
 	}
 	memset(cipher->unprocessed, 0, block_size);
 	memcpy(cipher->unprocessed, in + in_size - rest_size, rest_size);
 	cipher->unprocessed_size = rest_size;
-	*out_size = out_tmp;
+	*out_size = out_size_tmp;
 
 	return 0;
 }
@@ -99,24 +99,21 @@ int kc_cipher_update(kc_cipher_t *cipher, const uint8_t *in, size_t in_size,
 int kc_cipher_final(kc_cipher_t *cipher, uint8_t *in, size_t in_size,
 		    uint8_t *out, size_t *out_size)
 {
-	size_t out_tmp = 0;
+	size_t out_size_tmp = 0;
 	size_t out_last;
 	int res = 0;
 
-	printk(KERN_INFO "%s: in_size = %lu\n", __func__, in_size);
 	if (in_size > 0) {
-		res = kc_cipher_update(cipher, in, in_size, out, &out_tmp);
+		res = kc_cipher_update(cipher, in, in_size, out, &out_size_tmp);
 	}
 
 	if (res != 0) {
 		return res;
 	}
 
-	printk(KERN_INFO "%s: unprocessed_size = %lu\n", __func__,
-	       cipher->unprocessed_size);
 	if (cipher->unprocessed_size > 0) {
 		res = cipher->fn->final(cipher->cipher, cipher->unprocessed,
-					cipher->unprocessed_size, out + out_tmp,
+					cipher->unprocessed_size, out + out_size_tmp,
 					&out_last);
 	}
 
@@ -124,6 +121,6 @@ int kc_cipher_final(kc_cipher_t *cipher, uint8_t *in, size_t in_size,
 		return res;
 	}
 
-	*out_size = out_tmp + out_last;
+	*out_size = out_size_tmp + out_last;
 	return 0;
 }

@@ -15,6 +15,8 @@ extern const uint8_t TAU_REVERSE[BLOCK_SIZE];
 
 extern const uint64_t A_FORWARD[BLOCK_SIZE];
 
+extern const uint64_t A_REVERSE[BLOCK_SIZE];
+
 void X_transform512(uint8_t *block, const uint8_t *key);
 
 void L_transform512(uint8_t *block, const uint64_t *A_matrix);
