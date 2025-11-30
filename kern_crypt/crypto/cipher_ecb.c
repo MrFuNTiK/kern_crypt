@@ -1,3 +1,14 @@
+/**
+ * @file cipher_ecb.с
+ * @author Kirill Voevodin.
+ * @brief Функции для таблицы функций XLPS-шифратора в режиме ECB.
+ * @version 0.1
+ * @date 2025-11-30
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include <linux/string.h>
@@ -6,16 +17,32 @@
 #include "cipher_ecb.h"
 #include "transform.h"
 
+/* clang-format off */
+
+/**
+ * @brief Контекст XLPS-шифратора в режиме ECB.
+ * 
+ */
 typedef struct {
-	uint8_t *key;
-	kc_cipher_op_t op;
+	uint8_t *key;		/*< Ключ шифрования. */
+	kc_cipher_op_t op;	/*< Тип операции. */
 } kc_cipher_ecb_t;
 
+/* clang-format on */
+
+/**
+ * @brief Параметры XLPS-шифратора.
+ * 
+ */
 static const kc_cipher_param_t param = {
 	.key_size = 64,
 	.block_size = 64,
 };
 
+/**
+ * @brief Таблица функций XLPS-шифратора.
+ * 
+ */
 static const kc_cipher_fn_table_t table = {
 	.create = cipher_ecb_create,
 	.destroy = cipher_ecb_destroy,

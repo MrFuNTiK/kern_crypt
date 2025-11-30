@@ -1,3 +1,14 @@
+/**
+ * @file self_test.c
+ * @author Kirill Voevodin.
+ * @brief Самотестирование модуля.
+ * @version 0.1
+ * @date 2025-11-30
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include <self_test.h>
 #include "cipher_ecb.h"
 

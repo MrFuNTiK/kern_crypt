@@ -1,3 +1,14 @@
+/**
+ * @file cipher_ecb.с
+ * @author Kirill Voevodin.
+ * @brief KAT-тесты XLPS-шифратора в режиме ECB.
+ * @version 0.1
+ * @date 2025-11-30
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <crypto.h>

@@ -1,3 +1,14 @@
+/**
+ * @file module.c
+ * @author Kirill Voevodin.
+ * @brief kern_crypt module entry point.
+ * @version 0.1
+ * @date 2025-11-30
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/errno.h>

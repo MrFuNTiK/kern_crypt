@@ -1,3 +1,14 @@
+/**
+ * @file crypto.с
+ * @author Kirill Voevodin.
+ * @brief Реализация интерфейса шифрования.
+ * @version 0.1
+ * @date 2025-11-30
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #include <linux/slab.h>
 #include <crypto.h>
 #include "types.h"

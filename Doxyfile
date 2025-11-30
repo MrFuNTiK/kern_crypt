@@ -1,0 +1,7 @@
+DOXYFILE_ENCODING       = UTF-8
+PROJECT_NAME            = "kern_crypt"
+OUTPUT_DIRECTORY        = "doc/"
+RECURSIVE               = TRUE
+INPUT                   = "kern_crypt/"
+INPUT                  += README.md
+USE_MDFILE_AS_MAINPAGE  = README.md
